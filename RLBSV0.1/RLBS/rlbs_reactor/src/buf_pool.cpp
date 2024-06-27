@@ -6,6 +6,9 @@ buf_pool* buf_pool::_instance = NULL;
 // 用于保证创建单例的方法全局只执行一次
 pthread_once_t buf_pool::_once = PTHREAD_ONCE_INIT;
 
+// 初始化锁
+pthread_mutex_t buf_pool::_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 buf_pool::buf_pool() 
 {
 	_total_mem = 0;	
