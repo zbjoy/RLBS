@@ -18,6 +18,11 @@ public:
     //发送方法
     virtual int send_message(const char *data, int msglen, int msgid);
 
+	virtual int get_fd()
+	{
+		return 	_sockfd;
+	}
+
     //处理读业务
     void do_read();
 

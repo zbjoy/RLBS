@@ -21,10 +21,6 @@ typedef hash_map<uint64_t, host_set>::iterator route_map_it;
 class Route
 {
 public:	
-	static void init()
-	{
-		_instance = new Route();		
-	}
 
 	// 懒汉模式
 	static Route* instance()
@@ -44,6 +40,11 @@ public:
 	host_set get_hosts(int modid, int cmdid);
 
 private:
+	static void init()
+	{
+		_instance = new Route();		
+	}
+
 	Route();
 	Route(const Route&);
 	const Route& operator=(const Route&);
@@ -65,4 +66,4 @@ private:
 
 };
 
-
+void* publish_change_mod_test(void* args);

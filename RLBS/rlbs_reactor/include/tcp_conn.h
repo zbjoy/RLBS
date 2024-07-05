@@ -15,6 +15,11 @@ public:
 
 	virtual int send_message(const char* data, int msglen, int msgid);
 
+	virtual int get_fd()
+	{
+		return _connfd;		
+	}
+
 	void clean_conn();
 
 private:

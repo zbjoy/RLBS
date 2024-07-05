@@ -23,6 +23,11 @@ public:
     //udp 主动发送消息的方法
     virtual int send_message(const char *data, int msglen, int msgid);
 
+	virtual int get_fd()
+	{
+		return _sockfd;		
+	}
+
     //注册一个msgid和回调业务的路由关系 
     void add_msg_router(int msgid, msg_callback *cb, void *user_data = NULL);
 

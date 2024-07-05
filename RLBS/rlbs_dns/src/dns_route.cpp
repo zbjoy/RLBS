@@ -1,8 +1,12 @@
 // #include "mysql.h"
 #include "dns_route.h"
 #include "config_file.h"
+#include "subscribe.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <vector>
 
 using namespace std;
 
@@ -124,4 +128,32 @@ host_set Route::get_hosts(int modid, int cmdid)
 	pthread_rwlock_unlock(&_map_lock);
 
 	return hosts;
+}
+
+// test 发布的函数
+void* publish_change_mod_test(void* args)
+{
+	while (true)	
+	{
+		sleep(1);		
+
+		// printf("hello\n");
+
+		int modid1 = 1;
+		int cmdid1 = 1;
+		uint64_t mod1 = (((uint64_t)modid1) << 32) + cmdid1;
+
+		int modid2 = 1;
+		int cmdid2 = 2;
+		uint64_t mod2 = (((uint64_t)modid2) << 32) + cmdid2;
+
+		std::vector<uint64_t> changes;
+		changes.push_back(mod1);
+		changes.push_back(mod2);
+
+		SubscribeList::instance()->publish(changes);
+
+	}
+
+	return NULL;
 }
