@@ -104,11 +104,10 @@ int main()
 	server->add_msg_router(rlbs::ID_GetRouteRequest, get_route);
 
 	pthread_t tid;
-	int ret = pthread_create(&tid, NULL, check_route_changes, NULL);
+	int ret = pthread_create(&tid, NULL, publish_change_mod_test, NULL);
 	if (ret == -1)
 	{
 		perror("pthread_create error\n");
-		exit(1);
 	}
 
 	pthread_detach(tid);
