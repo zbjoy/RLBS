@@ -2,7 +2,7 @@
 
 
 //客户端处理客户端的读事件
-void client_read_callback(event_loop *loop, int fd, void *args)
+void read_callback(event_loop *loop, int fd, void *args)
 {
     udp_client *client = (udp_client*)args;
 
@@ -36,7 +36,7 @@ udp_client::udp_client(event_loop *loop, const char *ip, uint16_t port)
 
     //3 添加一个读事件回调
     this->_loop = loop;
-    _loop->add_io_event(_sockfd, client_read_callback, EPOLLIN, this);
+    _loop->add_io_event(_sockfd, read_callback, EPOLLIN, this);
 }
 
 udp_client::~udp_client()
