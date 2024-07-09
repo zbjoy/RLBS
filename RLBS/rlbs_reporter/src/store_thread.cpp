@@ -25,8 +25,8 @@ void thread_report(event_loop* loop, int fd, void* args)
 		report_msgs.pop();
 
 		store_conn->store(msg);
-		StoreReport sr;
-		sr.store(msg);
+		// StoreReport sr;
+		// sr.store(msg);
 	}
 }
 

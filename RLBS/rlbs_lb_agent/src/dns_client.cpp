@@ -48,7 +48,7 @@ void *dns_client_thread(void *args)
     printf("dns client thread start!\n");
     event_loop loop;
 
-    config_file::setPath("./conf/lb_agent.ini");
+    // config_file::setPath("./conf/lb_agent.ini");
     std::string ip = config_file::instance()->GetString("dns", "ip", "127.0.0.1");
     short port = config_file::instance()->GetNumber("dns", "port", 7778);
 

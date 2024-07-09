@@ -29,7 +29,7 @@ void *report_client_thread(void *args)
     printf("report client thread start!\n");
     event_loop loop;
 
-    config_file::setPath("./conf/lb_agent.ini");
+    // config_file::setPath("./conf/lb_agent.ini");
     std::string ip = config_file::instance()->GetString("reporter", "ip", "127.0.0.1");
     short port = config_file::instance()->GetNumber("reporter", "port", 7779);
 

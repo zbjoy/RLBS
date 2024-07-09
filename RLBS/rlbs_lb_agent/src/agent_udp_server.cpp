@@ -1,6 +1,16 @@
 #include "main_server.h"
 #include "udp_server.h"
 
+void report_cb(const char* data, uint32_t len, int msgid, net_connection* conn, void* user_data)
+{
+	rlbs::ReportRequest req;
+	req.ParseFromArray(data, len);
+
+	route_lb* route_lb_p = (route_lb*)user_data;
+
+	printf("udp server call report_cb\n");
+}
+
 void get_host_cb(const char* data, uint32_t len, int msgid, net_connection* conn, void* user_data)
 {
 	rlbs::GetHostRequest req;
@@ -36,7 +46,12 @@ void* agent_server_main(void* args)
 	udp_server server(&loop, "0.0.0.0", port);
 
 	// 给 udp server 注册一些消息路由业务
+	
+	// 针对 API 的获取主机信息接口
 	server.add_msg_router(rlbs::ID_GetHostRequest, get_host_cb, r_lb[port - 8888]); 
+
+	// 针对 API 的上报主机调用结果接口
+	server.add_msg_router(rlbs::ID_ReportRequest, report_cb, r_lb[port - 8888]);
 
 	printf("agent UDP server : port %d is started...\n", port);
 

@@ -27,11 +27,11 @@ int route_lb::update_host(int modid, int cmdid, rlbs::GetRouteResponse &rsp)
         }
         else {
             //将rsp中的主机信息加入到load_balance当中
-            //lb->update(rsp);
+			//3 加入到load_balance的host_map集合中
+            lb->update(rsp);
         }
     }
     
-    //3 加入到load_balance的host_map集合中
     
     pthread_mutex_unlock(&_mutex);
 
@@ -52,6 +52,18 @@ int route_lb::get_host(int modid, int cmdid, rlbs::GetHostResponse &rsp)
     if (_route_lb_map.find(mod) != _route_lb_map.end()) {
         //TODO 3 如果 key是存在的
         //  通过load_balance获取key模块所可用的host信息
+		load_balance* lb = _route_lb_map[mod];
+
+		if (lb->empty() == true)
+		{
+			rsp.set_retcode(rlbs::RET_NOEXIST);
+		}
+		else
+		{
+			ret = lb->choice_one_host(rsp);
+
+			rsp.set_retcode(ret);
+		}
         
     }
     else {
@@ -68,6 +80,7 @@ int route_lb::get_host(int modid, int cmdid, rlbs::GetHostResponse &rsp)
         lb->pull();
 
         //4.4 设置rsp中的回执的retcode 为不存在
+		fprintf(stderr, "route_lb.cpp: dns service 中 不存在\n");
         rsp.set_retcode(rlbs::RET_NOEXIST);
 
         ret = rlbs::RET_NOEXIST;

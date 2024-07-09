@@ -23,10 +23,22 @@ public:
 	{
 		_modid = modid;
 		_cmdid = cmdid;		
+		_access_cnt = 0;
 	}
+
+	bool empty()
+	{
+		return _host_map.empty();		
+	}
+
+	// 获得一个可用的 host 信息
+	int choice_one_host(rlbs::GetHostResponse& srp);
 
 	// 向远程的 DNS service 中发送 ID_GetRouteRequest 请求
 	int pull();
+
+	// 根据 Dns service 远程返回的主机结果, 更新自己的 host_map 表
+	void update(rlbs::GetRouteResponse& rsp);
 
 	enum STATUS
 	{
@@ -48,4 +60,7 @@ private:
 
 	// 过载队列
 	host_list _overload_list;
+
+	// 当前 modid/cmdid的请求次数
+	int _access_cnt;
 };

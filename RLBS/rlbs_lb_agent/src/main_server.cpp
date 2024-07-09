@@ -7,9 +7,16 @@ thread_queue<rlbs::GetRouteRequest>* dns_queue = NULL;
 //每个Agent UDP server   会对应一个 Route_lb
 route_lb *r_lb[3];
 
+struct load_balance_config lb_config;
+
 
 void init_lb_agent() 
 {
+	// 设置配置文件路径
+	config_file::setPath("../conf/lb_agent.ini");
+
+	lb_config.probe_num = config_file::instance()->GetNumber("loadbalance", "probe_num", 10);
+
     for (int i = 0; i < 3 ; i++) {
         int id = i + 1; //route_lb 的id是从 1 开始计数的
         r_lb[i] = new route_lb(id);
