@@ -8,7 +8,9 @@ void report_cb(const char* data, uint32_t len, int msgid, net_connection* conn, 
 
 	route_lb* route_lb_p = (route_lb*)user_data;
 
-	printf("udp server call report_cb\n");
+	// printf("udp server call report_cb\n");
+	// route_lb* route_lb_p = (route_lb*)user_data;
+	route_lb_p->report_host(req);
 }
 
 void get_host_cb(const char* data, uint32_t len, int msgid, net_connection* conn, void* user_data)
@@ -35,6 +37,30 @@ void get_host_cb(const char* data, uint32_t len, int msgid, net_connection* conn
 	conn->send_message(responseString.c_str(), responseString.size(), rlbs::ID_GetHostResponse);
 }
 
+void get_route_cb(const char* data, uint32_t len, int msgid, net_connection* conn, void* user_data)
+{
+	rlbs::GetRouteRequest req;
+	req.ParseFromArray(data, len);
+
+	int modid = req.modid();
+	int cmdid = req.cmdid();
+
+	rlbs::GetRouteResponse rsp;
+	rsp.set_modid(modid);
+	rsp.set_cmdid(cmdid);
+
+	// 通过 route_lb 获取一个可用 host 添加到 rsp 中
+	route_lb* route_lb_p = (route_lb*)user_data;
+
+	route_lb_p->get_route(modid, cmdid, rsp);
+
+	// 将 rsp 发送回给 api
+	std::string responseString;
+	rsp.SerializeToString(&responseString);
+	conn->send_message(responseString.c_str(), responseString.size(), rlbs::ID_API_GetRouteResponse);
+
+}
+
 void* agent_server_main(void* args)
 {
 	long index = (long)args;	
@@ -53,7 +79,11 @@ void* agent_server_main(void* args)
 	// 针对 API 的上报主机调用结果接口
 	server.add_msg_router(rlbs::ID_ReportRequest, report_cb, r_lb[port - 8888]);
 
-	printf("agent UDP server : port %d is started...\n", port);
+	// 针对 API 获取路由全部信息的接口
+	server.add_msg_router(rlbs::ID_API_GetRouteRequest, get_route_cb, r_lb[port - 8888]);
+	
+
+	// printf("agent UDP server : port %d is started...\n", port);
 
 	loop.event_process();
 

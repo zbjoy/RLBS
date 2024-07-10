@@ -281,14 +281,15 @@ const char descriptor_table_protodef_rlbs_2eproto[] =
   "\007retcode\030\004 \001(\005\022\034\n\004host\030\005 \001(\0132\016.rlbs.Host"
   "Info\"\\\n\rReportRequest\022\r\n\005modid\030\001 \001(\005\022\r\n\005"
   "cmdid\030\002 \001(\005\022\034\n\004host\030\003 \001(\0132\016.rlbs.HostInf"
-  "o\022\017\n\007retcode\030\004 \001(\005*\254\001\n\tMessageId\022\r\n\tID_U"
+  "o\022\017\n\007retcode\030\004 \001(\005*\345\001\n\tMessageId\022\r\n\tID_U"
   "NKNOW\020\000\022\026\n\022ID_GetRouteRequest\020\001\022\027\n\023ID_Ge"
   "tRouteResponse\020\002\022\032\n\026ID_ReportStatusReque"
   "st\020\003\022\025\n\021ID_GetHostRequest\020\004\022\026\n\022ID_GetHos"
-  "tResponse\020\005\022\024\n\020ID_ReportRequest\020\006*T\n\013Lar"
-  "sRetCode\022\014\n\010RET_SUCC\020\000\022\020\n\014RET_OVERLOAD\020\001"
-  "\022\024\n\020RET_SYSTEM_ERROR\020\002\022\017\n\013RET_NOEXIST\020\003b"
-  "\006proto3"
+  "tResponse\020\005\022\024\n\020ID_ReportRequest\020\006\022\032\n\026ID_"
+  "API_GetRouteRequest\020\007\022\033\n\027ID_API_GetRoute"
+  "Response\020\010*T\n\013LarsRetCode\022\014\n\010RET_SUCC\020\000\022"
+  "\020\n\014RET_OVERLOAD\020\001\022\024\n\020RET_SYSTEM_ERROR\020\002\022"
+  "\017\n\013RET_NOEXIST\020\003b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_rlbs_2eproto_deps[1] = {
 };
@@ -305,7 +306,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_rlb
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_rlbs_2eproto_once;
 static bool descriptor_table_rlbs_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_rlbs_2eproto = {
-  &descriptor_table_rlbs_2eproto_initialized, descriptor_table_protodef_rlbs_2eproto, "rlbs.proto", 927,
+  &descriptor_table_rlbs_2eproto_initialized, descriptor_table_protodef_rlbs_2eproto, "rlbs.proto", 984,
   &descriptor_table_rlbs_2eproto_once, descriptor_table_rlbs_2eproto_sccs, descriptor_table_rlbs_2eproto_deps, 8, 0,
   schemas, file_default_instances, TableStruct_rlbs_2eproto::offsets,
   file_level_metadata_rlbs_2eproto, 8, file_level_enum_descriptors_rlbs_2eproto, file_level_service_descriptors_rlbs_2eproto,
@@ -327,6 +328,8 @@ bool MessageId_IsValid(int value) {
     case 4:
     case 5:
     case 6:
+    case 7:
+    case 8:
       return true;
     default:
       return false;

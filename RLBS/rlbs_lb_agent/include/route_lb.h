@@ -20,7 +20,14 @@ public:
 	// agent 获取一个 host 主机, 将返回的主机结果存放在 rsp 中
 	int get_host(int modid, int cmdid, rlbs::GetHostResponse& rsp);
 
+	// agent 获取 host 主机集合 将返回的主机结果存放到 rsp 中
+	int get_route(int modid, int cmdid, rlbs::GetRouteResponse& rsp);
+
 	int update_host(int modid, int cmdid, rlbs::GetRouteResponse& rsp);
+
+	void report_host(rlbs::ReportRequest& req);
+
+	void reset_lb_status();
 
 private:
 	route_map _route_lb_map; // 当前 route_lb 模块所管理的 loadbalance 集合

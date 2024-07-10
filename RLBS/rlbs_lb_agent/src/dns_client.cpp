@@ -41,6 +41,14 @@ void new_dns_request(event_loop *loop, int fd, void *args)
     }
 }
 
+void conn_init(net_connection* conn, void* args)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        r_lb[i]->reset_lb_status();
+    }
+}
+
 
 //dns client 线程的主业务
 void *dns_client_thread(void *args)
@@ -63,6 +71,9 @@ void *dns_client_thread(void *args)
 
     //注册一个回调函数 用来处理dns server的返回的消息
     client.add_msg_router(rlbs::ID_GetRouteResponse, deal_recv_route);
+
+    // 设置一个当前 dns client 的创建连接成功的 Hook 函数
+    client.set_conn_start(conn_init);
 
 
     loop.event_process();

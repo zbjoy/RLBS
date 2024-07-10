@@ -161,3 +161,111 @@ void rlbs_client::report(int modid, int cmdid, std::string &ip, int port, int re
 	}
 }
 
+int rlbs_client::get_route(int modid, int cmdid, route_set& route)
+{
+	// 1 封装请求的 protobuf 消息
+	rlbs::GetRouteRequest req;
+	req.set_modid(modid);
+	req.set_cmdid(cmdid);
+
+	// 2 打包成 rlbs 能够识别的 message
+	char write_buf[4096], read_buf[20 * 4096];
+	// 消息头
+
+msg_head head;
+    head.msglen = req.ByteSizeLong();
+    head.msgid = rlbs::ID_API_GetRouteRequest;
+
+    memcpy(write_buf, &head, MESSAGE_HEAD_LEN);
+    req.SerializeToArray(write_buf + MESSAGE_HEAD_LEN, head.msglen);
+
+
+    //3 发送
+    int index = (modid + cmdid) %3;
+    int ret = sendto(_sockfd[index], write_buf, head.msglen + MESSAGE_HEAD_LEN, 0, NULL, 0);
+    if (ret == -1) {
+        perror("send to");
+        return rlbs::RET_SYSTEM_ERROR;
+    }
+    
+    //4 阻塞等待接收数据
+    int message_len;
+    rlbs::GetRouteResponse rsp;
+
+    message_len = recvfrom(_sockfd[index], read_buf, sizeof(read_buf), 0, NULL, 0);
+    if (message_len == -1) {
+        perror("recvfrom ");
+        return rlbs::RET_SYSTEM_ERROR;
+    }
+
+    //消息头
+    memcpy(&head, read_buf, MESSAGE_HEAD_LEN);
+    if (head.msgid != rlbs::ID_API_GetRouteResponse) {
+        fprintf(stderr, "message IDerrror\n");
+        return rlbs::RET_SYSTEM_ERROR;
+    }
+    
+    //消息体
+    ret = rsp.ParseFromArray(read_buf + MESSAGE_HEAD_LEN, message_len-MESSAGE_HEAD_LEN);
+    if (!ret) {
+        fprintf(stderr, "message format error\n");
+        return rlbs::RET_SYSTEM_ERROR;
+    }
+
+
+
+    if (rsp.modid() != modid || rsp.cmdid() != cmdid) {
+        fprintf(stderr, "message format error\n");
+        return rlbs::RET_SYSTEM_ERROR;
+    }
+    
+    //5 处理消息
+    for (int i = 0; i < rsp.host_size(); i++) {
+        const rlbs::HostInfo &host = rsp.host(i);
+        //将ip的网络字节序转换成主机字节序
+        uint32_t host_ip = ntohl(host.ip()); 
+
+        // ip 
+        struct in_addr inaddr;
+        inaddr.s_addr = host_ip;
+        std::string ip = inet_ntoa(inaddr);
+
+        // port
+        int port = host.port();
+        
+        // ip+port --> route
+        route.push_back(ip_port(ip, port));
+    }
+    
+    return rlbs::RET_SUCC;
+}
+
+
+//注册一个模块
+int rlbs_client::reg_init(int modid, int cmdid)
+{
+    route_set route;
+
+    int retry_cnt = 0;
+
+    while (route.empty() && retry_cnt < 3) {
+
+        get_route(modid, cmdid, route);
+
+        if (route.empty() == true) {
+            usleep(50000); //等待50ms
+        }
+        else {
+            break;
+        }
+
+        ++retry_cnt;
+    }
+
+
+    if (route.empty() == true) {
+        return rlbs::RET_NOEXIST;//3
+    }
+
+    return rlbs::RET_SUCC; //0
+}
